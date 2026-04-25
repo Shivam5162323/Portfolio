@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shivam - Security Engineer &amp; Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #030608;
+    --bg2: #080d12;
+    --surface: #0d1520;
+    --border: #1a2d42;
+    --accent: #00e5ff;
+    --accent2: #7fff00;
+    --accent3: #ff4757;
+    --text: #e0eaf5;
+    --muted: #4a6580;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', 'Segoe UI', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+    display: none;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
+    display: none;
+  }
+
+  /* SCANLINES */
+  .scanlines {
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; width: 100%;
+    z-index: 100;
+    padding: 20px 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(to bottom, rgba(3,6,8,0.97), transparent);
+    backdrop-filter: blur(12px);
+  }
+  .nav-logo { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent); letter-spacing: 0.1em; }
+  .nav-logo span { color: var(--muted); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--muted); text-decoration: none; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  #hero { min-height: 100vh; display: flex; align-items: center; padding: 0 60px; position: relative; overflow: hidden; }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 20%, transparent 75%);
+    mask-image: radial-gradient(ellipse at 50% 50%, black 20%, transparent 75%);
+  }
+  .hero-glow { position: absolute; width: 700px; height: 700px; background: radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 65%); top: 50%; left: 35%; transform: translate(-50%, -50%); pointer-events: none; }
+  .hero-content { position: relative; max-width: 900px; }
+  .hero-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+  .hero-tag::before { content: ''; width: 40px; height: 1px; background: var(--accent); display: inline-block; }
+  .hero-name { font-size: clamp(4rem, 10vw, 8rem); font-weight: 800; line-height: 0.9; letter-spacing: -0.03em; margin-bottom: 24px; }
+  .hero-name .line1 { display: block; }
+  .hero-name .line2 { display: block; color: transparent; -webkit-text-stroke: 1px rgba(0,229,255,0.4); }
+  .hero-desc { font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; color: var(--muted); line-height: 1.9; max-width: 520px; margin-bottom: 48px; }
+  .hero-desc .hl { color: var(--accent); }
+  .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary {
+    padding: 14px 32px; background: var(--accent); color: var(--bg);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;
+    border: none; cursor: none; display: inline-block;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .btn-primary:hover { background: #fff; box-shadow: 0 0 30px rgba(0,229,255,0.4); }
+  .btn-outline {
+    padding: 14px 32px; background: transparent; color: var(--accent);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;
+    border: 1px solid var(--border); cursor: none; display: inline-block;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--accent); background: rgba(0,229,255,0.05); }
+  .status-badge { position: absolute; right: 60px; bottom: 80px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .status-dot { width: 8px; height: 8px; background: var(--accent2); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; box-shadow:0 0 0 0 rgba(127,255,0,0.4); } 50% { opacity:0.7; box-shadow:0 0 0 8px rgba(127,255,0,0); } }
+
+  /* SECTIONS */
+  section { padding: 100px 60px; position: relative; }
+  .section-header { display: flex; align-items: center; gap: 20px; margin-bottom: 64px; }
+  .section-num { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent); letter-spacing: 0.1em; }
+  .section-title { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.02em; }
+  .section-line { flex: 1; height: 1px; background: linear-gradient(to right, var(--border), transparent); }
+
+  /* EXPERIENCE */
+  #experience { background: var(--bg2); }
+  .exp-card { border: 1px solid var(--border); padding: 40px; position: relative; overflow: hidden; transition: border-color 0.3s; }
+  .exp-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: linear-gradient(to bottom, var(--accent), transparent); }
+  .exp-card:hover { border-color: rgba(0,229,255,0.3); }
+  .exp-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 8px; }
+  .exp-role { font-size: 1.4rem; font-weight: 700; }
+  .exp-period { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); background: rgba(0,229,255,0.08); padding: 6px 14px; border: 1px solid rgba(0,229,255,0.2); }
+  .exp-company { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--muted); margin-bottom: 28px; }
+  .exp-bullets { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .exp-bullets li { font-size: 0.9rem; color: #8aa8c0; line-height: 1.7; padding-left: 20px; position: relative; }
+  .exp-bullets li::before { content: '\25B8'; color: var(--accent); position: absolute; left: 0; font-size: 0.7rem; top: 3px; }
+
+  /* PROJECTS */
+  #projects { background: var(--bg); }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  /* Glass card */
+  .project-card {
+    background: rgba(13, 21, 32, 0.52);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 229, 255, 0.08);
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+    cursor: none;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  /* top-edge glow on hover */
+  .project-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,229,255,0.5), transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .project-card:hover {
+    border-color: rgba(0, 229, 255, 0.2);
+    background: rgba(13, 21, 32, 0.75);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 44px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,229,255,0.05), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .project-card:hover::after { opacity: 1; }
+  /* big number watermark */
+  .project-card::before {
+    content: attr(data-num);
+    position: absolute; top: 14px; right: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 3rem; font-weight: 700;
+    color: rgba(0,229,255,0.04);
+    line-height: 1;
+    transition: color 0.3s;
+    pointer-events: none;
+    user-select: none;
+  }
+  .project-card:hover::before { color: rgba(0,229,255,0.08); }
+  .project-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.63rem; color: var(--accent2); letter-spacing: 0.15em; text-transform: uppercase; }
+  .project-name {
+    font-size: 1.25rem; font-weight: 700;
+    margin-top: 11px; margin-bottom: 13px;
+    line-height: 1.25;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    max-width: 100%;
+  }
+  .project-desc { font-size: 0.82rem; color: #6a8aa0; line-height: 1.75; margin-bottom: 22px; flex: 1; }
+  .project-techs { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 22px; }
+  .tech-pill {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+    padding: 4px 10px;
+    border: 1px solid rgba(0,229,255,0.12);
+    background: rgba(0,229,255,0.04);
+    color: rgba(0,229,255,0.55);
+    letter-spacing: 0.05em;
+  }
+  .project-link { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: gap 0.2s; }
+  .project-link:hover { gap: 14px; }
+
+  /* RESEARCH */
+  #research { background: var(--bg2); }
+  .papers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; }
+  .paper-card { border: 1px solid var(--border); padding: 36px; position: relative; overflow: hidden; transition: all 0.3s; text-decoration: none; display: block; cursor: none; }
+  .paper-card:hover { border-color: rgba(0,229,255,0.35); background: var(--surface); transform: translateY(-3px); }
+  .paper-card::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(to right, var(--accent), transparent); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
+  .paper-card:hover::after { transform: scaleX(1); }
+  .paper-badge { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--accent3); background: rgba(255,71,87,0.08); border: 1px solid rgba(255,71,87,0.2); padding: 4px 12px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
+  .paper-title { font-size: 1.05rem; font-weight: 700; line-height: 1.45; color: var(--text); margin-bottom: 20px; }
+  .paper-link-row { display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--accent); transition: gap 0.2s; }
+  .paper-card:hover .paper-link-row { gap: 14px; }
+
+  /* SKILLS */
+  #skills { background: var(--bg); }
+  .skills-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
+  .skill-group { border: 1px solid var(--border); padding: 32px; }
+  .skill-group-title { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 24px; }
+  .skill-items { display: flex; flex-wrap: wrap; gap: 10px; }
+  .skill-item { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; padding: 8px 16px; background: var(--bg2); border: 1px solid var(--border); color: var(--text); transition: all 0.2s; cursor: none; }
+  .skill-item:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,229,255,0.05); transform: translateY(-2px); }
+
+  /* EDUCATION */
+  #education { background: var(--bg2); }
+  .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .edu-card { border: 1px solid var(--border); padding: 36px; }
+  .edu-icon { font-size: 2rem; margin-bottom: 20px; }
+  .edu-degree { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+  .edu-school { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--muted); margin-bottom: 16px; }
+  .edu-gpa { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent2); margin-bottom: 16px; }
+  .gate-badge { display: inline-flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent2); background: rgba(127,255,0,0.08); border: 1px solid rgba(127,255,0,0.25); padding: 6px 14px; letter-spacing: 0.08em; }
+  .cert-list { display: flex; flex-direction: column; gap: 16px; }
+  .cert-item { padding: 20px 24px; border-left: 2px solid var(--accent); background: var(--bg); }
+  .cert-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+  .cert-org { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); }
+
+  /* HACKATHONS */
+  #hackathons { background: var(--bg); }
+  .hack-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .hack-card { border: 1px solid var(--border); padding: 28px; position: relative; overflow: hidden; transition: all 0.3s; }
+  .hack-card:hover { border-color: rgba(0,229,255,0.3); transform: translateY(-4px); }
+  .hack-name { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+  .hack-org { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-bottom: 4px; }
+  .hack-date { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--accent); }
+
+  /* CONTACT */
+  #contact { background: var(--bg2); text-align: center; }
+  .contact-inner { max-width: 600px; margin: 0 auto; }
+  .contact-title { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 20px; }
+  .contact-title span { color: transparent; -webkit-text-stroke: 1px rgba(0,229,255,0.5); }
+  .contact-desc { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--muted); margin-bottom: 48px; line-height: 1.8; }
+  .contact-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .contact-link { display: flex; align-items: center; gap: 10px; padding: 14px 24px; border: 1px solid var(--border); color: var(--text); text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; letter-spacing: 0.08em; transition: all 0.2s; cursor: none; }
+  .contact-link:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,229,255,0.05); }
+  .contact-link svg { opacity: 0.7; flex-shrink: 0; }
+
+  /* FOOTER */
+  footer { padding: 24px 60px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  footer p { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); }
+
+  /* TERMINAL */
+  .terminal-widget { position: fixed; bottom: 32px; right: 32px; width: 340px; background: rgba(8,13,18,0.98); border: 1px solid var(--border); z-index: 200; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; box-shadow: 0 20px 60px rgba(0,0,0,0.8); transform: translateY(calc(100% + 50px)); transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); }
+  .terminal-widget.open { transform: translateY(0); }
+  .terminal-header { padding: 10px 14px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .terminal-dots { display: flex; gap: 6px; }
+  .terminal-dots span { width: 8px; height: 8px; border-radius: 50%; }
+  .terminal-dots span:nth-child(1) { background: #ff4757; }
+  .terminal-dots span:nth-child(2) { background: #ffa502; }
+  .terminal-dots span:nth-child(3) { background: #2ed573; }
+  .terminal-title { color: var(--muted); font-size: 0.65rem; }
+  .terminal-body { padding: 16px; min-height: 140px; max-height: 200px; overflow-y: auto; color: #7ee8a2; line-height: 1.8; white-space: pre-wrap; word-break: break-all; }
+  .terminal-input-row { display: flex; align-items: center; padding: 10px 16px; border-top: 1px solid var(--border); gap: 8px; }
+  .terminal-prompt { color: var(--accent); flex-shrink: 0; }
+  .terminal-input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; cursor: text; min-width: 0; }
+  .terminal-toggle { position: fixed; bottom: 32px; right: 32px; width: 44px; height: 44px; background: var(--accent); color: var(--bg); border: none; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; z-index: 201; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px)); transition: background 0.2s; }
+  .terminal-toggle:hover { background: #fff; }
+
+  /* FADE */
+  .fade-up { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  /* GITHUB DYNAMIC PROJECTS */
+  .projects-header-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 48px; }
+  .projects-header-row .section-header { margin-bottom: 0; flex: 1; }
+  .gh-live-badge { display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--accent2); background: rgba(127,255,0,0.06); border: 1px solid rgba(127,255,0,0.2); padding: 6px 14px; letter-spacing: 0.08em; flex-shrink: 0; }
+  .gh-live-badge .dot { width: 6px; height: 6px; background: var(--accent2); border-radius: 50%; animation: pulse 2s infinite; }
+  .project-meta { display: flex; align-items: center; gap: 14px; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(0,229,255,0.07); }
+  .meta-stat { display: flex; align-items: center; gap: 5px; font-family: 'JetBrains Mono', monospace; font-size: 0.63rem; color: var(--muted); }
+  .meta-stat svg { flex-shrink: 0; }
+  .project-links-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .featured-chip { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; color: var(--accent3); background: rgba(255,71,87,0.08); border: 1px solid rgba(255,71,87,0.2); padding: 3px 9px; letter-spacing: 0.1em; text-transform: uppercase; flex-shrink: 0; }
+
+  /* SKELETON LOADING */
+  .skeleton-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .skeleton-card { background: rgba(13,21,32,0.52); border: 1px solid rgba(0,229,255,0.06); padding: 36px 32px; display: flex; flex-direction: column; gap: 16px; }
+  .skel { background: linear-gradient(90deg, var(--surface) 25%, rgba(26,45,66,0.6) 50%, var(--surface) 75%); background-size: 200% 100%; animation: shimmer 1.6s infinite; border-radius: 2px; }
+  .skel-tag { height: 11px; width: 110px; }
+  .skel-title { height: 20px; width: 65%; }
+  .skel-line { height: 10px; width: 100%; }
+  .skel-line.short { width: 60%; }
+  .skel-pills { display: flex; gap: 7px; }
+  .skel-pill { height: 24px; width: 56px; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* ERROR STATE */
+  .gh-error { border: 1px solid rgba(255,71,87,0.2); padding: 40px; text-align: center; background: rgba(13,21,32,0.5); backdrop-filter: blur(12px); }
+  .gh-error-code { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent3); letter-spacing: 0.1em; margin-bottom: 12px; }
+  .gh-error-msg { font-size: 0.85rem; color: var(--muted); }
+
+  @media (max-width: 1100px) {
+    .projects-grid { grid-template-columns: repeat(2, 1fr); }
+    .skeleton-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    section { padding: 80px 24px; }
+    #hero { padding: 0 24px; }
+    .edu-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    footer { padding: 24px; flex-direction: column; gap: 8px; text-align: center; }
+    .status-badge { display: none; }
+    .terminal-widget, .terminal-toggle { display: none; }
+    body { cursor: auto; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .skeleton-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><span>//</span> shivam.dev</div>
+  <ul class="nav-links">
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#hackathons">Hackathons</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Available for opportunities</div>
+    <h1 class="hero-name">
+      <span class="line1">Shivam</span>
+      <span class="line2">Security Engineer</span>
+    </h1>
+    <p class="hero-desc">
+      Cybersecurity engineer &amp; mobile developer.<br>
+      <span class="hl">VAPT &middot; Android Security &middot; AI-Augmented Tooling</span><br>
+      GATE 2025 Qualified &middot; 2x IEEE Published Researcher.<br>
+      Building secure systems &amp; beautiful interfaces.
+    </p>
+    <div class="hero-ctas">
+      <a href="#projects" class="btn-primary">View Projects</a>
+      <a href="#contact" class="btn-outline">Get In Touch</a>
+    </div>
+  </div>
+  <div class="status-badge">
+    <span class="status-dot"></span>
+    Open to work &middot; Security Engineer &middot; Pursuing M.E. AI/ML
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Experience</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="exp-card fade-up">
+    <div class="exp-header">
+      <h3 class="exp-role">Cybersecurity Intern</h3>
+      <span class="exp-period">Mar 2025 &mdash; Jul 2025</span>
+    </div>
+    <div class="exp-company">I4C &mdash; Ministry of Home Affairs &middot; New Delhi</div>
+    <ul class="exp-bullets">
+      <li>Developed Python automation scripts to streamline repetitive cybersecurity and data handling tasks, reducing manual workload by ~40%.</li>
+      <li>Analyzed mobile applications to detect potential security, compliance, and privacy risks including foreign-origin and Android apps.</li>
+      <li>Conducted vulnerability assessments on websites, identifying issues such as directory listing exposure and SQL injection points, and documented remediation steps.</li>
+      <li>Conducted open-source research on anonymity networks and their potential misuse.</li>
+      <li>Developed an AI system to analyze I4C Daily Digest PDFs, enabling semantic search and summarized Q&amp;A with source traceability.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- CERT-IN ACKNOWLEDGEMENT -->
+<section id="certin" style="background: var(--bg); padding: 0 60px 60px;">
+  <div class="exp-card fade-up" style="border-color: rgba(0,229,255,0.25); background: rgba(0,229,255,0.03);">
+    <div class="exp-header">
+      <h3 class="exp-role" style="color: var(--accent);">&#x1F6E1; CERT-In Acknowledged Researcher</h3>
+      <span class="exp-period">Responsible Disclosure</span>
+    </div>
+    <div class="exp-company">CERT-In &mdash; Indian Computer Emergency Response Team &middot; Ministry of Electronics &amp; IT</div>
+    <p style="font-size: 0.9rem; color: #8aa8c0; line-height: 1.7;">
+      Independently discovered and responsibly disclosed two security vulnerabilities in live Indian government infrastructure. Both were officially acknowledged by CERT-In &mdash; India's national cybersecurity agency under the Ministry of Electronics &amp; IT.
+    </p>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="projects-header-row">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Projects</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="gh-live-badge"><span class="dot"></span> Live from GitHub</div>
+  </div>
+  <div id="projects-container">
+    <div class="skeleton-grid" id="projects-skeleton">
+      <div class="skeleton-card"><div class="skel skel-tag"></div><div class="skel skel-title"></div><div class="skel skel-line"></div><div class="skel skel-line short"></div><div class="skel-pills"><div class="skel skel-pill"></div><div class="skel skel-pill"></div><div class="skel skel-pill"></div></div></div>
+      <div class="skeleton-card"><div class="skel skel-tag"></div><div class="skel skel-title"></div><div class="skel skel-line"></div><div class="skel skel-line short"></div><div class="skel-pills"><div class="skel skel-pill"></div><div class="skel skel-pill"></div></div></div>
+      <div class="skeleton-card"><div class="skel skel-tag"></div><div class="skel skel-title"></div><div class="skel skel-line"></div><div class="skel skel-line short"></div><div class="skel-pills"><div class="skel skel-pill"></div><div class="skel skel-pill"></div><div class="skel skel-pill"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- RESEARCH PAPERS -->
+<section id="research">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Research Papers</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="papers-grid">
+    <a href="https://ieeexplore.ieee.org/abstract/document/10973884" target="_blank" class="paper-card fade-up">
+      <div class="paper-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        IEEE Published
+      </div>
+      <div class="paper-title">AI-Powered Financial Fraud Detection and Prevention Framework</div>
+      <div class="paper-link-row">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        ieeexplore.ieee.org &rarr;
+      </div>
+    </a>
+    <a href="https://ieeexplore.ieee.org/abstract/document/11051454" target="_blank" class="paper-card fade-up">
+      <div class="paper-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        IEEE Published
+      </div>
+      <div class="paper-title">Self-Supervised Learning for CIFAR-10 Image Classification</div>
+      <div class="paper-link-row">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        ieeexplore.ieee.org &rarr;
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Skills</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="skills-container">
+    <div class="skill-group fade-up">
+      <div class="skill-group-title">// Offensive Security</div>
+      <div class="skill-items">
+        <span class="skill-item">Burp Suite</span>
+        <span class="skill-item">Nmap</span>
+        <span class="skill-item">Metasploit</span>
+        <span class="skill-item">SQLi</span>
+        <span class="skill-item">XSS</span>
+        <span class="skill-item">VAPT</span>
+      </div>
+    </div>
+    <div class="skill-group fade-up">
+      <div class="skill-group-title">// Mobile Security</div>
+      <div class="skill-items">
+        <span class="skill-item">Android SAST/DAST</span>
+        <span class="skill-item">Frida</span>
+        <span class="skill-item">apktool</span>
+        <span class="skill-item">jadx</span>
+      </div>
+    </div>
+    <div class="skill-group fade-up">
+      <div class="skill-group-title">// OSINT &amp; Network</div>
+      <div class="skill-items">
+        <span class="skill-item">Wireshark</span>
+        <span class="skill-item">Shodan</span>
+        <span class="skill-item">VirusTotal</span>
+        <span class="skill-item">Tor/I2P Analysis</span>
+      </div>
+    </div>
+    <div class="skill-group fade-up">
+      <div class="skill-group-title">// AI &amp; Automation</div>
+      <div class="skill-items">
+        <span class="skill-item">Python</span>
+        <span class="skill-item">RAG Pipelines</span>
+        <span class="skill-item">Ollama</span>
+        <span class="skill-item">LLM Integration</span>
+        <span class="skill-item">Flask</span>
+      </div>
+    </div>
+    <div class="skill-group fade-up">
+      <div class="skill-group-title">// Languages &amp; DB</div>
+      <div class="skill-items">
+        <span class="skill-item">C++</span>
+        <span class="skill-item">Dart</span>
+        <span class="skill-item">SQL</span>
+        <span class="skill-item">Firebase</span>
+        <span class="skill-item">Supabase</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Education &amp; Certs</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="edu-grid fade-up">
+    <div style="display: flex; flex-direction: column; gap: 32px;">
+      <div class="edu-card">
+        <div class="edu-icon">&#127891;</div>
+        <div class="edu-degree">Bachelor of Engineering</div>
+        <div class="edu-school">Chandigarh University &middot; Punjab &middot; 2025</div>
+        <div class="edu-gpa">CGPA: 8.02 / 10</div>
+        <div class="gate-badge">&#9889; GATE 2025 Qualified &mdash; Organized by IIT Roorkee</div>
+      </div>
+      <div class="edu-card">
+        <div class="edu-icon">&#127775;</div>
+        <div class="edu-degree">Master of Engineering &mdash; AI &amp; Machine Learning</div>
+        <div class="edu-school">Chandigarh University &middot; 2027</div>
+        <div class="gate-badge" style="color: var(--accent); background: rgba(0,229,255,0.08); border-color: rgba(0,229,255,0.25);">&#9679; In Progress</div>
+      </div>
+    </div>
+    <div>
+      <div class="cert-list">
+        <div class="cert-item" style="display: flex; align-items: center; gap: 20px;">
+          <img src="data:image/png;base64,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" alt="eJPT Badge" style="width: 72px; height: 72px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(255,20,147,0.35));">
+          <div>
+            <div class="cert-name">eJPT &mdash; Junior Penetration Tester</div>
+            <div class="cert-org">INE Security &middot; Certification ID: 179656112 &middot; 2026</div>
+          </div>
+        </div>
+        <div class="cert-item">
+          <div class="cert-name">Google Cybersecurity Professional Certificate</div>
+          <div class="cert-org">Google / Coursera &middot; 2026</div>
+        </div>
+        <div class="cert-item">
+          <div class="cert-name">Microsoft Cybersecurity Analyst Professional Certificate</div>
+          <div class="cert-org">Microsoft / Coursera &middot; 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HACKATHONS -->
+<section id="hackathons">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Hackathons</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="hack-grid">
+    <div class="hack-card fade-up">
+      <div class="hack-name">Rajasthan Police Hackathon 1.0</div>
+      <div class="hack-org">Rajasthan Police</div>
+      <div class="hack-date">January 2024</div>
+    </div>
+    <div class="hack-card fade-up">
+      <div class="hack-name">HackAIthon</div>
+      <div class="hack-org">Shri Ram Group, Jabalpur</div>
+      <div class="hack-date">September 2023</div>
+    </div>
+    <div class="hack-card fade-up">
+      <div class="hack-name">HackCOG</div>
+      <div class="hack-org">IIIT Delhi</div>
+      <div class="hack-date">August 2023</div>
+    </div>
+    <div class="hack-card fade-up">
+      <div class="hack-name">HACK IT SAPIENS</div>
+      <div class="hack-org">Poornima College of Engineering</div>
+      <div class="hack-date">April 2023</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <h2 class="contact-title">Let's <span>Connect</span></h2>
+    <p class="contact-desc">Open to full-time roles in cybersecurity, penetration testing, and security research. CERT-In acknowledged researcher with hands-on government experience. Drop a message and I'll get back to you.</p>
+    <div class="contact-links">
+      <a href="mailto:shivam5162323@gmail.com" class="contact-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        shivam5162323@gmail.com
+      </a>
+      <a href="tel:+918865025773" class="contact-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.82 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.73 2.8h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.51a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        +91 88650 25773
+      </a>
+      <a href="https://github.com/Shivam5162323" class="contact-link" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        GitHub
+      </a>
+      <a href="https://linkedin.com/in/shivam-1905811b2" class="contact-link" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 Shivam. All rights reserved.</p>
+  <p>Built with vanilla HTML / CSS / JS</p>
+</footer>
+
+<!-- TERMINAL -->
+<button class="terminal-toggle" id="termToggle" onclick="toggleTerminal()">&#9166;</button>
+<div class="terminal-widget" id="terminal">
+  <div class="terminal-header">
+    <div class="terminal-dots"><span></span><span></span><span></span></div>
+    <span class="terminal-title">shivam@portfolio ~</span>
+  </div>
+  <div class="terminal-body" id="termBody">Welcome! Type <span style="color:#00e5ff">help</span> for commands.</div>
+  <div class="terminal-input-row">
+    <span class="terminal-prompt">~ $&nbsp;</span>
+    <input type="text" class="terminal-input" id="termInput" placeholder="type a command...">
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   GITHUB DYNAMIC PROJECTS
+   — Edit EXCLUDE to hide repos by name
+   — Edit SYNTHETIC to add custom pinned projects
+   — Edit FEATURED to override repo metadata
+══════════════════════════════════════════════ */
+(function () {
+  var GH_USER = 'Shivam5162323';
+
+  /* ─────────────────────────────────────────────
+     EXCLUDE — add repo names here to hide them
+  ───────────────────────────────────────────── */
+  var EXCLUDE = [
+  'Portfolio', 'rederpolicy','Shivam5162323'
+    // e.g. 'old-experiment', 'forked-stuff'
+  ];
+
+  /* ─────────────────────────────────────────────
+     SYNTHETIC — manually-pinned projects that
+     aren't (or shouldn't be) on GitHub.
+     pinPosition: 0-indexed slot in final list.
+  ───────────────────────────────────────────── */
+  var SYNTHETIC = [
+    {
+      pinPosition: 2,
+      name: 'RESS — AI Cybersecurity Workspace',
+      tag: 'Security · AI',
+      desc: 'Personal cybersecurity research workspace with OneNote-style notes, folder organisation, version history, and multi-format attachments. Powered by a local vector store for real-time document Q&A without external network dependency. Includes GENOS — a browser-based security toolkit with hash cracking, EXIF forensics, and XSS/SQLi payload generation.',
+      techs: ['Python', 'Vector DB', 'Flask', 'AI/NLP', 'JavaScript'],
+      html_url: null
+    }
+  ];
+
+  /* ─────────────────────────────────────────────
+     FEATURED — metadata overrides for GitHub repos
+  ───────────────────────────────────────────── */
+  var FEATURED = {
+    'INK-LINK': {
+      tag: 'Realtime · Social',
+      desc: 'Real-time whiteboard chatting app with split-screen & full-screen modes, story sharing, multilingual support, and friend discovery.',
+      extraTechs: ['Flutter', 'Firebase', 'Dart'],
+      featured: true
+    },
+    'Reder': {
+      tag: 'Mobile · Production',
+      desc: 'Flutter app to manage and sync PDF & Excel files across devices with offline downloads, folder organization, and file viewing.',
+      extraTechs: ['Flutter', 'Dart', 'Supabase', 'Firebase Auth'],
+      altLink: { label: 'Play Store →', url: 'https://play.google.com/store/apps/details?id=com.vendvl.bookmanager' },
+      featured: true
+    },
+    'Police-Connect': {
+      tag: 'Hackathon · Civic Tech',
+      desc: 'Civic platform with online FIR filing, anonymous incident reporting, and community chat with Google Maps emergency navigation.',
+      extraTechs: ['Flutter', 'Firebase', 'Google Maps API'],
+      featured: true
+    }
+  };
+
+  var LANG_COLORS = {
+    'Dart':'#00B4AB','Python':'#3572A5','JavaScript':'#F7DF1E',
+    'TypeScript':'#3178C6','C++':'#F34B7D','HTML':'#E34C26',
+    'CSS':'#563D7C','Java':'#B07219','Kotlin':'#A97BFF',
+    'Swift':'#F05138','Go':'#00ADD8','Rust':'#DEA584',
+    'Shell':'#89E051','C':'#555555','Vue':'#41B883'
+  };
+
+  function langDot(lang) {
+    var c = LANG_COLORS[lang] || '#4a6580';
+    return '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + c + ';margin-right:5px;flex-shrink:0;vertical-align:middle"></span>';
+  }
+  function starSVG() { return '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'; }
+  function forkSVG() { return '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>'; }
+
+  function renderCard(item, idx) {
+    var num = String(idx + 1).padStart(2, '0');
+
+    if (item._synthetic) {
+      var pillsHTML = item.techs.map(function(t) { return '<span class="tech-pill">' + t + '</span>'; }).join('');
+      return '<div class="project-card fade-up" data-num="' + num + '">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">'
+        +   '<div class="project-tag">' + item.tag + '</div>'
+        +   '<span class="featured-chip">Featured</span>'
+        + '</div>'
+        + '<h3 class="project-name">' + item.name + '</h3>'
+        + '<p class="project-desc">' + item.desc + '</p>'
+        + '<div class="project-techs">' + pillsHTML + '</div>'
+        + '<div class="project-links-row"><span class="project-link" style="color:var(--muted);pointer-events:none">Private</span></div>'
+        + '</div>';
+    }
+
+    var over    = FEATURED[item.name] || {};
+    var isFeat  = !!over.featured;
+    var tag     = over.tag || (item.topics && item.topics.length ? item.topics.slice(0,2).join(' · ') : (item.language || 'Repository'));
+    var desc    = over.desc || item.description || 'No description provided.';
+    var techs   = over.extraTechs || (item.language ? [item.language] : []);
+    var pills   = techs.map(function(t) { return '<span class="tech-pill">' + t + '</span>'; }).join('');
+
+    var links = '';
+    if (over.altLink) links += '<a href="' + over.altLink.url + '" class="project-link" target="_blank">' + over.altLink.label + '</a>';
+    if (item.html_url) links += '<a href="' + item.html_url + '" class="project-link" target="_blank"' + (over.altLink ? ' style="color:var(--muted)"' : '') + '>GitHub →</a>';
+    if (!links) links = '<span class="project-link" style="color:var(--muted);pointer-events:none">Private</span>';
+
+    var meta = '';
+    if (item.stargazers_count > 0) meta += '<span class="meta-stat">' + starSVG() + item.stargazers_count + '</span>';
+    if (item.forks_count > 0)      meta += '<span class="meta-stat">' + forkSVG() + item.forks_count + '</span>';
+    if (item.language)             meta += '<span class="meta-stat">' + langDot(item.language) + item.language + '</span>';
+
+    var hdr = isFeat
+      ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div class="project-tag">' + tag + '</div><span class="featured-chip">Featured</span></div>'
+      : '<div class="project-tag">' + tag + '</div>';
+
+    return '<div class="project-card fade-up" data-num="' + num + '">'
+      + hdr
+      + '<h3 class="project-name">' + item.name + '</h3>'
+      + '<p class="project-desc">' + desc + '</p>'
+      + '<div class="project-techs">' + pills + '</div>'
+      + '<div class="project-links-row">' + links + '</div>'
+      + (meta ? '<div class="project-meta">' + meta + '</div>' : '')
+      + '</div>';
+  }
+
+  function showError(msg) {
+    document.getElementById('projects-container').innerHTML =
+      '<div class="gh-error"><div class="gh-error-code">// ERR_GITHUB_FETCH</div><div class="gh-error-msg">' + msg + '</div></div>';
+  }
+
+  function buildList(repos) {
+    var filtered = repos.filter(function(r) {
+      return !r.fork && EXCLUDE.indexOf(r.name) === -1;
+    });
+    filtered.sort(function(a, b) {
+      var af = FEATURED[a.name] ? 1 : 0, bf = FEATURED[b.name] ? 1 : 0;
+      if (af !== bf) return bf - af;
+      if (b.stargazers_count !== a.stargazers_count) return b.stargazers_count - a.stargazers_count;
+      return new Date(b.updated_at) - new Date(a.updated_at);
+    });
+    SYNTHETIC.forEach(function(s) {
+      var entry = { _synthetic: true, name: s.name, tag: s.tag, desc: s.desc, techs: s.techs, html_url: s.html_url };
+      var pos = Math.min(s.pinPosition, filtered.length);
+      filtered.splice(pos, 0, entry);
+    });
+    return filtered;
+  }
+
+  function loadProjects() {
+    fetch('https://api.github.com/users/' + GH_USER + '/repos?sort=updated&per_page=30&type=public')
+      .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(repos) {
+        var list = buildList(repos);
+        document.getElementById('projects-container').innerHTML =
+          '<div class="projects-grid">' + list.map(renderCard).join('') + '</div>';
+
+        var io = new IntersectionObserver(function(entries) {
+          entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.06 });
+        document.querySelectorAll('#projects-container .fade-up').forEach(function(el) { io.observe(el); });
+
+        document.querySelectorAll('.project-card').forEach(function(el) {
+          el.addEventListener('mouseenter', function() {
+            var c = document.getElementById('cursor'), rg = document.getElementById('cursorRing');
+            if (c) c.style.transform = 'translate(-50%,-50%) scale(2.2)';
+            if (rg) rg.style.opacity = '0.2';
+          });
+          el.addEventListener('mouseleave', function() {
+            var c = document.getElementById('cursor'), rg = document.getElementById('cursorRing');
+            if (c) c.style.transform = 'translate(-50%,-50%) scale(1)';
+            if (rg) rg.style.opacity = '0.5';
+          });
+        });
+
+        window._ghRepos = list;
+      })
+      .catch(function(err) {
+        console.error(err);
+        showError('Could not load repositories. Check network or GitHub rate limit.');
+      });
+  }
+
+  loadProjects();
+})();
+
+(function () {
+  /* ── CURSOR ── */
+  var cursor = document.getElementById('cursor');
+  var ring   = document.getElementById('cursorRing');
+  var mx = 0, my = 0, rx = 0, ry = 0;
+  var shown = false;
+
+  document.addEventListener('mousemove', function (e) {
+    mx = e.clientX;
+    my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top  = my + 'px';
+    if (!shown) {
+      shown = true;
+      cursor.style.display = 'block';
+      ring.style.display   = 'block';
+    }
+  });
+
+  (function animRing() {
+    rx += (mx - rx) * 0.13;
+    ry += (my - ry) * 0.13;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(animRing);
+  })();
+
+  document.querySelectorAll('a, button, .skill-item, .project-card, .hack-card, .paper-card').forEach(function (el) {
+    el.addEventListener('mouseenter', function () {
+      cursor.style.transform = 'translate(-50%,-50%) scale(2.2)';
+      ring.style.opacity = '0.2';
+    });
+    el.addEventListener('mouseleave', function () {
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.opacity = '0.5';
+    });
+  });
+
+  /* ── SCROLL FADE ── */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.07 });
+
+  document.querySelectorAll('.fade-up').forEach(function (el, i) {
+    el.style.transitionDelay = (i % 4) * 0.08 + 's';
+    io.observe(el);
+  });
+
+  /* ── TERMINAL ── */
+  var termOpen = false;
+  window.toggleTerminal = function () {
+    termOpen = !termOpen;
+    document.getElementById('terminal').classList.toggle('open', termOpen);
+    if (termOpen) setTimeout(function () { document.getElementById('termInput').focus(); }, 420);
+  };
+
+  var cmds = {
+    help:       function () { return '<span style="color:#00e5ff">Commands:</span>  whoami  skills  experience  projects  repos  research  contact  clear'; },
+    whoami:     function () { return '<span style="color:#7fff00">Shivam</span>\nCybersecurity Intern @ I4C / MHA\nB.E Graduate  |  CGPA 8.02\nGATE 2025 Qualified (IIT Roorkee)\n2x IEEE Published Researcher\nSecurity Researcher  |  Penetration Tester'; },
+    skills:     function () { return '<span style="color:#00e5ff">Languages:</span>  Python, Dart, C++, SQL\n<span style="color:#00e5ff">Mobile:</span>     Flutter, Flask\n<span style="color:#00e5ff">Security:</span>   Kali Linux, VAPT, OSINT\n<span style="color:#00e5ff">Cloud/DB:</span>   Firebase, Supabase'; },
+    experience: function () { return '<span style="color:#7fff00">Cybersecurity Intern</span> @ I4C - MHA\nMar 2025 - Jul 2025, New Delhi\n-> 40% manual workload cut (Python automation)\n-> Mobile app security analysis\n-> AI-powered PDF digest system'; },
+    projects:   function () {
+      if (window._ghRepos && window._ghRepos.length) {
+        return window._ghRepos.slice(0, 6).map(function(r, i) {
+          return '<span style="color:#7fff00">' + r.name + '</span>'
+            + (r.description ? '  ' + r.description.slice(0, 55) + (r.description.length > 55 ? '…' : '') : '')
+            + (r.stargazers_count ? '  ★' + r.stargazers_count : '');
+        }).join('\n') + '\n<span style="color:#4a6580">→ github.com/' + 'Shivam5162323' + '</span>';
+      }
+      return '<span style="color:#7fff00">Reder</span>          PDF/Excel sync app  (Play Store)\n<span style="color:#7fff00">INK-LINK</span>       Real-time whiteboard chat  (GitHub)\n<span style="color:#7fff00">Police Connect</span>  Civic tech  (Rajasthan Police Hackathon)';
+    },
+    research:   function () { return '<span style="color:#ff4757">[IEEE]</span> AI-Powered Financial Fraud Detection & Prevention\n       ieeexplore.ieee.org/abstract/document/10973884\n\n<span style="color:#ff4757">[IEEE]</span> Self-Supervised Learning for CIFAR-10 Classification\n       ieeexplore.ieee.org/abstract/document/11051454'; },
+    repos:      function () {
+      if (window._ghRepos && window._ghRepos.length) {
+        return '<span style="color:#00e5ff">Public repos (' + window._ghRepos.length + '):</span>\n' +
+          window._ghRepos.map(function(r) {
+            return '  ' + r.name + (r.language ? '  <span style="color:#4a6580">(' + r.language + ')</span>' : '');
+          }).join('\n');
+      }
+      return '<span style="color:#ff4757">Repos not loaded yet. Try again in a moment.</span>';
+    },
+    contact:    function () { return '<span style="color:#7fff00">Email:</span>    shivam5162323@gmail.com\n<span style="color:#7fff00">Phone:</span>    +91 8865025773\n<span style="color:#7fff00">GitHub:</span>   github.com/Shivam5162323\n<span style="color:#7fff00">LinkedIn:</span> linkedin.com/in/shivam-1905811b2'; },
+    clear:      function () { document.getElementById('termBody').innerHTML = ''; return null; }
+  };
+
+  document.getElementById('termInput').addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    var val  = this.value.trim().toLowerCase();
+    var body = document.getElementById('termBody');
+    body.innerHTML += '\n<span style="color:#4a6580">~ $</span> ' + val + '\n';
+    var result = null;
+    if (val && cmds[val]) {
+      result = cmds[val]();
+    } else if (val) {
+      result = '<span style="color:#ff4757">command not found: ' + val + '</span>';
+    }
+    if (result !== null && result !== undefined && result !== '') {
+      body.innerHTML += result + '\n';
+    }
+    this.value = '';
+    body.scrollTop = body.scrollHeight;
+  });
+})();
+</script>
+</body>
+</html>
